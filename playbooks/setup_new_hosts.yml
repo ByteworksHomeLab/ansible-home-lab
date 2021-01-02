@@ -1,0 +1,50 @@
+---
+- hosts: "new_hosts"
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: "Check if host is reachable"
+      wait_for:
+        timeout: 0
+      register: connect_rs
+      ignore_unreachable: yes
+
+    - name: apt
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
+
+    - name: Set a hostname
+      hostname:
+        name: '{{ new_host }}'
+
+    - name: Copy hosts file
+      template:
+        dest: /etc/hosts
+        src: new_hosts.j2
+        owner: root
+        group: root
+        mode: 0221
+
+    - name: Copy disable network config into place
+      copy:
+        dest: /etc/netplan/new_hosts_99-disable-network-config.cfg
+        src: new_hosts_99-disable-network-config.cfg
+        owner: root
+        group: root
+        mode: 0661
+
+    - name: Setup static IP
+      template:
+        dest: /etc/netplan/50-cloud-init.yaml
+        src: new_hosts_50-cloud-init.j2
+
+    - name: Apply netplan
+      command: sudo netplan apply
+      async: 45
+      poll: 0
+      ignore_errors: true
+
+    - name: ping
+      shell: ping -c 1 -w 2 '{{ new_ip }}'
+      ignore_errors: true

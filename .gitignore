@@ -1,0 +1,11 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+.jekyll-cache
+
+**/.DS_Store
+*.DS_Store
+.DS_Store
+/_site/

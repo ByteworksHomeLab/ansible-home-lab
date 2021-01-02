@@ -1,0 +1,35 @@
+[master]
+192.168.1.10
+
+[node]
+192.168.1.[10:70]
+
+[k3s_cluster:children]
+master
+node
+
+[ubuntu]
+pi1
+pi2
+pi3
+pi4
+pi5
+pi6
+pi7
+pi8
+pi9
+
+[db]
+mini1
+
+[ldap]
+mini1
+
+[nas]
+pi9
+
+[new_hosts]
+192.168.1.185 new_ip=192.168.1.50 new_host=pi5
+192.168.1.155 new_ip=192.168.1.60 new_host=pi6
+192.168.1.203 new_ip=192.168.1.70 new_host=pi7
+192.168.1.205 new_ip=192.168.1.80 new_host=pi8
