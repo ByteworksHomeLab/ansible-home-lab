@@ -1,0 +1,10 @@
+---
+- hosts: "ubuntu"
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: apt update and upgrade
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
+

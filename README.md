@@ -4,19 +4,19 @@ This repository contains Ansible scripts for my Kubernetes home lab. I made it p
 
 # Description
 
-*This project is modeled after [github.com/Valian/ansible-multienv-base](https://github.com/Valian/ansible-multienv-base.*
+*I modeled this project after [Jakub Skałecki's](https://rock-it.pl/author/jakub/) project in GitHub: [github.com/Valian/ansible-multienv-base](https://github.com/Valian/ansible-multienv-base).*
 
 # Structure
 ```
 |- hosts
 |  |- shared-secrets.yml  # encrypted vars, used in all environments
 |  |- shared-vars.yml     # not encrypted vars, used in all environments
-|  |- environment1        # directory for environment (e.g. test or staging)
+|  |- prod                # directory for prod environment
 |  |  |- inventory        # inventory file with definitions of all required hosts
 |  |  |- secrets.yml      # encrpted vars for this environment
 |  |  |- groups_vars
 |  |     |- all.yml       # normal group_vars, like in typical ansible project
-|  |- environment2        # directory for other environment
+|  |- test                # directory for test environment
 |     |- inventory
 |     |- secrets.yml
 |     |- groups_vars
@@ -36,10 +36,23 @@ git clone https://github.com/Valian/ansible-multienv-base
 Next, create playbooks, fill inventories and variables, create roles etc. 
 To encrypt secret variables file, use
 ```
-ansible-vault encrypt path-to-file     # Caution! The password must be the same in every encrypted file
+ansible-vault encrypt path-to-file     
+# Caution! The password must be the same in every encrypted file
+```
+
+See /Users/stevemitchell/.ansible.cfg for the default values. It allows us to leave off most of the parameters.
+Examples of ad-hoc Ansible command with the default values
+
+```shell
+ansible all --list-hosts
+ansible all -m ping
+ansible all -m gather_facts
 ```
 
 There is also a special task, that we should include in pre_tasks in each playbook, called tasks/load_vars.yml.
+
 To run playbook against the specified environment, we must use this command format:
 ```
-ansible-playbook -i hosts/desired_env/inventory --ask-vault-pass playbook.yml
+ansible-playbook -i hosts/test/inventory setup_new_hosts.yml
+ansible-playbook -i hosts/prod/inventory apt_update.yml
+

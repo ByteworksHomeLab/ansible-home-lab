@@ -1,15 +1,18 @@
 ---
 - hosts: "new_hosts"
   gather_facts: false
+  remote_user: stevemitchell
   become: yes
   tasks:
     - name: apt update and upgrade
       apt:
         update_cache: yes
         upgrade: 'yes'
+
     - name: Set a hostname
       hostname:
         name: '{{ new_host }}'
+
     - name: Copy hosts file
       template:
         dest: /etc/hosts
@@ -17,6 +20,7 @@
         owner: root
         group: root
         mode: 0221
+
     - name: Copy disable network config into place
       copy:
         dest: /etc/netplan/99-disable-network-config.cfg
@@ -24,15 +28,28 @@
         owner: root
         group: root
         mode: 0661
+
     - name: Setup static IP
       template:
         dest: /etc/netplan/50-cloud-init.yaml
         src: new_hosts_50-cloud-init.j2
+
     - name: Apply netplan
       command: sudo netplan apply
       async: 45
       poll: 0
       ignore_errors: true
-    - name: Reboot machine
-      reboot:
-        test_command: ping -c 4 {{ new_ip }}
+
+#    - name: Reboot immediately if there was a change.
+#      shell: "sleep 5 && reboot"
+#      async: 1
+#      poll: 0
+#      when: task_result is changed
+#
+#    - name: Wait for the reboot to complete if there was a change.
+#      wait_for_connection:
+#        connect_timeout: 30
+#        sleep: 5
+#        delay: 5
+#        timeout: 300
+#      when: task_result is changed

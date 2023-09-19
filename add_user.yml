@@ -1,0 +1,35 @@
+---
+- hosts: ARM64_ubuntu
+  remote_user: sysadmin
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  connection: ssh
+  tasks:
+
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: Add sudoers users to wheel group
+      user:
+        name: stevemitchell
+        createhome: yes
+        shell: /bin/bash
+        groups: wheel
+        append: yes
+        state: present
+
+    - name: Set up authorized keys for the sysadmin user
+      authorized_key: user=stevemitchell key="{{item}}"
+      with_file:
+        - /Users/stevemitchell/.ssh/id_rsa.pub
