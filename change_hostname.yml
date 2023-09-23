@@ -7,9 +7,9 @@
       hostname:
         name: '{{ new_host }}'
 
-    - name: Copy hosts file
+    - name: Copy hosts.yml file
       template:
-        dest: /etc/hosts
+        dest: /etc/hosts.yml
         src: new_hosts.j2
         owner: root
         group: root

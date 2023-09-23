@@ -44,15 +44,24 @@ See /Users/stevemitchell/.ansible.cfg for the default values. It allows us to le
 Examples of ad-hoc Ansible command with the default values
 
 ```shell
-ansible all --list-hosts
+ansible all --list-hosts.yml
 ansible all -m ping
 ansible all -m gather_facts
+ansible all -m apt -a update_cache=true --become --ask-become-pass
+ansible all -m apt -a name=vim-nox --become --ask-become-pass
+ansible all -m apt -a name=hardinfo --become --ask-become-pass
+ansible all -m reboot --become --ask-become-pass
 ```
 
 There is also a special task, that we should include in pre_tasks in each playbook, called tasks/load_vars.yml.
 
+To get an ansible playbook.
+```shell
+ansible-galaxy collection install community.postgresql
+```
+
 To run playbook against the specified environment, we must use this command format:
 ```
-ansible-playbook -i hosts/test/inventory setup_new_hosts.yml
-ansible-playbook -i hosts/prod/inventory apt_update.yml
+ansible-playbook  --ask-become-pass setup_new_hosts.yml
+ansible-playbook --ask-become-pass apt_update.yml 
 
