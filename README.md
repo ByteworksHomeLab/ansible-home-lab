@@ -64,4 +64,5 @@ To run playbook against the specified environment, we must use this command form
 ```
 ansible-playbook  --ask-become-pass setup_new_hosts.yml
 ansible-playbook --ask-become-pass apt_update.yml 
+ansible-playbook --ask-become-pass -i hosts.yml -i dbservers apt_update.yml
 
