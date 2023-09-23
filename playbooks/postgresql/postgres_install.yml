@@ -1,0 +1,94 @@
+---
+- name: postgresql install
+  gather_facts: no
+  hosts: all
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - name: ensure apt cache is up to date
+      apt: update_cache=yes
+    - name: "Install packages"
+      ansible.builtin.apt:
+        name:
+          - postgresql
+          - postgresql-contrib
+          - libpq-dev
+          - python3-psycopg2
+        state: present
+    - name: "Locale patch for postgres"
+      lineinfile: dest=/etc/default/locale line='LANGUAGE="en_US:en"' state=present
+    - name: "Locale patch for postgres"
+      lineinfile: dest=/etc/default/locale line='LC_ALL="en_US.UTF-8"' state=present
+    - name: "Open up port 5432"
+      ansible.builtin.iptables:
+        chain: INPUT
+        source: 0/0
+        protocol: tcp
+        destination_port: "5432"
+        jump: ACCEPT
+
+  tasks:
+    - name: "Find out if PostgreSQL is initialized"
+      ansible.builtin.stat:
+        path: "{{ postgresql_data_dir }}/pg_hba.conf"
+      register: postgres_data
+
+    - name: Initialize PostgreSQL
+      ansible.builtin.shell: "{{ postgresql_bin_path }}/initdb -D {{ postgresql_data_dir }}"
+      become: true
+      become_user: postgres
+      when: not postgres_data.stat.exists
+
+    - name: "Start and enable services"
+      service: "name={{ item }} state=started enabled=yes"
+      with_items:
+        - postgresql
+
+    - name: postgresql should listen on all ports for CONNECTIONS AND AUTHENTICATION
+      lineinfile: dest=/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+        regexp="^#listen_addresses"
+        line="listen_addresses = 'localhost, {{ ansible_ssh_host }}'" state=present
+
+    - name: postgresql should allow access to host
+      blockinfile:
+        dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+        block: |
+          host    all             all             0.0.0.0/0                md5
+          host    replication     replicant       0.0.0.0/0                md5
+      notify: restart postgresql
+
+    - name: "Create app database"
+      postgresql_db:
+        state: present
+        name: "{{ db_name }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Create db user"
+      postgresql_user:
+        state: present
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        role_attr_flags: CREATEDB,NOSUPERUSER
+      become: yes
+      become_user: postgres
+
+    - name: "Allow md5 connection for the db user"
+      postgresql_pg_hba:
+        dest: "~/data/pg_hba.conf"
+        contype: host
+        databases: all
+        method: md5
+        users: "{{ db_user }}"
+        create: true
+      become: yes
+      become_user: postgres
+      notify: restart postgres
+
+  handlers:
+    - name: restart postgres
+      service: name=postgresql state=restarted
+
