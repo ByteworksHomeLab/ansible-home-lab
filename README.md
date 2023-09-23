@@ -67,6 +67,6 @@ ansible-playbook --ask-become-pass apt_update.yml
 ansible-playbook --ask-become-pass --limit dbservers apt_update.yml 
 ansible-playbook --ask-become-pass --limit maascserver apt_update.yml
 cd 
-ansible-playbook --ask-become-pass --limit dbservers playbooks/postgresql/postgres_install.yml
+ansible-playbook --ask-become-pass playbooks/postgresql/postgres_install.yml
 
 
