@@ -3,7 +3,7 @@ postgresql_version: 14
 listen_addresses_host_ip: true
 postgresql_host: "{{ ansible_ssh_host }}"
 disable_socket_connecxion: false
-create_users: true
+create_users: false
 create_databases: false
 postgresql_config:
   - option: port
