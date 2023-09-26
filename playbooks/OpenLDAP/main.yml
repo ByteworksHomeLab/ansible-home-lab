@@ -1,0 +1,8 @@
+- name: Install openldap
+  hosts: ldapservers
+  roles:
+    - role: capitanh.openldap-ansible-role
+      become: yes
+  vars_files:
+    - variable/main.yml
+    - variable/users.yml

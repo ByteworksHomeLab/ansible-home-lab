@@ -1,0 +1,8 @@
+dn: ou=people,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: groups
+

@@ -1,0 +1,11 @@
+ldap_users:
+  smitchell:
+    cn: Steve Mitchell
+    givenname: Steve
+    sn: Mitchell
+    mail: smitchell@byteworksinc.com
+    userpassword: [SECRET]
+ldap_groups:
+  - name: admins
+    members:
+      - smitchell

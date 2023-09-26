@@ -1,0 +1,15 @@
+dn: uid=smitchell,ou=People,dc=byteworksinc,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: smitchell
+sn: Steve
+givenName: Mitchell
+cn: Steve Mitchell
+displayName: Steve Mitchell
+uidNumber: 10000
+gidNumber: 5000
+userPassword: GENERATE WITH slappasswd
+gecos: Steve Mitchell
+loginShell: /bin/bash
+homeDirectory: /home/smitchell

@@ -3,7 +3,7 @@
 Run this command from the root of this project.
 
 ```shell
-ansible-playbook --ask-become-pass playbooks/postgresql/postgres_install.yml
+ansible-playbook --ask-become-pass playbooks/postgresql/main.yml
 ```
 
 Check the status
@@ -59,7 +59,11 @@ Exit the `postgres` user, then try the new sign in:
 ```shell
 psql -h localhost -U maas -d maas_db
 ```
+Connection string for MAAS.
 
+```test
+postgresql://maas@192.168.3.3/maas_db
+```
 
 
 
