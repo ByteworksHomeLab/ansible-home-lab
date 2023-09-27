@@ -65,70 +65,87 @@ Test the connection locally, then remotely.
 ldapmodify -H ldapi:/// -D "cn=admin,dc=byteworksinc,dc=com" -W
 ```
 
+# BOOTING CONFIG FOR LDIF
+
+Generate a user password
+
+```shell
+slappasswd
+New password:
+Re-enter new password:
+```
+
+Restart the LDAP Config wizard.
+
+```shell
+sudo dpkg-reconfigure slapd
+
+[sudo] password for ubuntu:
+  Backing up /etc/ldap/slapd.d in /var/backups/slapd-2.5.16+dfsg-0ubuntu0.22.04.1... done.
+  Moving old database directory to /var/backups:
+  - directory unknown... done.
+  Creating initial configuration... done.
+  Creating LDAP directory... done.
+```
+Import the  desired ldif file.
+
+```shell
+ldapadd -x -D cn=admin,dc=byteworksinc,dc=com -W -f ldap.ldif
+```
+
+Verify the import.
 
 ```shell
 ldapsearch -Q -LLL -Y EXTERNAL -H ldapi:///
-
 dn: dc=byteworksinc,dc=com
 objectClass: top
 objectClass: dcObject
 objectClass: organization
 o: byteworksinc.com
 dc: byteworksinc
-```
 
-## Password problems
+dn: ou=People,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: People
 
-```shell
-sudo slappasswd
-New password:
-Re-enter new password:
+dn: ou=Group,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: Group
 
-/etc/ldap/slapd.d# ldapsearch -LLL -Y EXTERNAL -H ldapi:/// -b  cn=config olcRootDN=cn=admin,dc=byteworksinc dn olcRootDN olcRootPW
-```
+dn: cn=Admin,ou=Group,dc=byteworksinc,dc=com
+objectClass: posixGroup
+cn: Admins
+cn: Admin
+gidNumber: 5000
+memberUid: smitchell
 
-```shell
-# ldapsearch -x -b "dc=byteworksinc,dc=com" -H ldap://192.168.3.2 cn
+dn: cn=Developers,ou=Group,dc=byteworksinc,dc=com
+objectClass: posixGroup
+cn: Developers
+gidNumber: 5001
+memberUid: smitchell
 
-ldapsearch -x -b "dc=byteworksinc,dc=com" -H ldap://127.0.0.1 cn
+dn: cn=smitchell,ou=Group,dc=byteworksinc,dc=com
+cn: smitchell
+objectClass: posixGroup
+gidNumber: 10000
+memberUid: smitchell
 
-# extended LDIF
-#
-# LDAPv3
-# base <dc=byteworksinc,dc=com> with scope subtree
-# filter: (objectclass=*)
-# requesting: cn
-#
-
-# byteworksinc.com
-dn: dc=byteworksinc,dc=com
-
-# groups, byteworksinc.com
-dn: ou=groups,dc=byteworksinc,dc=com
-
-# people, byteworksinc.com
-dn: ou=people,dc=byteworksinc,dc=com
-
-# stevemitchell, people, byteworksinc.com
-dn: uid=stevemitchell,ou=people,dc=byteworksinc,dc=com
+dn: uid=smitchell,ou=People,dc=byteworksinc,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: smitchell
+sn: Steve
+givenName: Mitchell
+mail: smitchell@byteworksinc.com
 cn: Steve Mitchell
-
-# admin, groups, byteworksinc.com
-dn: cn=admin,ou=groups,dc=byteworksinc,dc=com
-cn: admin
-
-# search result
-search: 2
-result: 0 Success
-
-# numResponses: 6
-# numEntries: 5
-```
-
-Test Admin Sign in
-
-```shell
-ldapsearch -x -b "dc=byteworksinc,dc=com" -H ldap://127.0.0.1  -D "cn=admin,ou=people,dc=byteworksinc,dc=com" -W 
+displayName: Steve Mitchell
+uidNumber: 10000
+gidNumber: 10000
+gecos: Steve Mitchell
+loginShell: /bin/bash
+homeDirectory: /home/smitchell
 ```
 
 ![1-network-parameters.png](images%2F1-network-parameters.png)

@@ -1,0 +1,43 @@
+dn: ou=People,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Group,dc=byteworksinc,dc=com
+objectClass: organizationalUnit
+ou: Group
+
+dn: cn=Admin,ou=Group,dc=byteworksinc,dc=com
+objectClass: posixGroup
+cn: Admins
+gidNumber: 5000
+memberUid: smitchell
+
+dn: cn=Developers,ou=Group,dc=byteworksinc,dc=com
+objectClass: posixGroup
+cn: Developers
+gidNumber: 5001
+memberUid: smitchell
+
+dn: cn=smitchell,ou=Group,dc=byteworksinc,dc=com
+cn: smitchell
+objectClass: posixGroup
+gidNumber: 10000
+memberUid: smitchell
+
+dn: uid=smitchell,ou=People,dc=byteworksinc,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: smitchell
+sn: Steve
+givenName: Mitchell
+mail: smitchell@byteworksinc.com
+cn: Steve Mitchell
+displayName: Steve Mitchell
+uidNumber: 10000
+gidNumber: 10000
+userPassword: [GENERATE USING slappasswd]
+gecos: Steve Mitchell
+loginShell: /bin/bash
+homeDirectory: /home/smitchell
+~
